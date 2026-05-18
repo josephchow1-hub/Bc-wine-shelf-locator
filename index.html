@@ -3,105 +3,395 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BC Wine Shelf Locator</title>
+  <title>BC Wine Shelf Manager</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, sans-serif; background: #f5f5f0; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
-    .container { width: 100%; max-width: 520px; }
-    h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.25rem; color: #111; }
-    .subtitle { font-size: 14px; color: #777; margin-bottom: 1.5rem; }
-    .search-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
-    #search { flex: 1; padding: 10px 14px; font-size: 15px; border-radius: 8px; border: 1px solid #ccc; background: #fff; color: #111; }
-    #search:focus { outline: none; border-color: #888; box-shadow: 0 0 0 2px rgba(100,100,200,0.15); }
-    button#go { padding: 10px 20px; font-size: 15px; border-radius: 8px; border: 1px solid #ccc; background: #fff; color: #111; cursor: pointer; }
-    button#go:hover { background: #f0f0f0; }
-    button#go:active { transform: scale(0.97); }
-    #result-area { min-height: 80px; }
-    .result-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.5rem; display: flex; gap: 20px; align-items: center; margin-bottom: 10px; }
-    .shelf-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 72px; background: #EEEDFE; border-radius: 8px; flex-shrink: 0; }
-    .shelf-num { font-size: 28px; font-weight: 500; color: #3C3489; line-height: 1; }
-    .shelf-label { font-size: 11px; color: #534AB7; margin-top: 3px; letter-spacing: 0.04em; }
-    .info { flex: 1; }
-    .winery-name { font-size: 18px; font-weight: 500; color: #111; margin-bottom: 8px; }
-    .section-pill { display: inline-block; font-size: 13px; padding: 4px 14px; border-radius: 99px; }
-    .top    { background: #EAF3DE; color: #3B6D11; }
-    .mid1   { background: #E6F1FB; color: #185FA5; }
-    .mid2   { background: #FAEEDA; color: #854F0B; }
-    .bottom { background: #FAECE7; color: #993C1D; }
-    .message { font-size: 14px; color: #888; text-align: center; padding: 2rem 0; }
-    .err { font-size: 14px; color: #993C1D; text-align: center; padding: 2rem 0; }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:system-ui,sans-serif;background:#f5f5f0;min-height:100vh;display:flex;justify-content:center;padding:1.5rem 1rem;}
+    .screen{background:#fff;border-radius:16px;border:1px solid #e5e5e5;overflow:hidden;width:100%;max-width:440px;align-self:flex-start;}
+
+    .topbar{padding:14px 14px 10px;border-bottom:1px solid #eee;}
+    .topbar-title{font-size:17px;font-weight:500;color:#111;margin-bottom:8px;}
+    .search-row{display:flex;gap:6px;}
+    .search-row input{flex:1;padding:9px 11px;font-size:14px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;}
+    .search-row input:focus{outline:none;box-shadow:0 0 0 2px rgba(83,74,183,0.2);}
+    .search-row button{padding:9px 13px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
+    .search-row button:hover{background:#f0f0f0;}
+    .search-row button:active{transform:scale(0.97);}
+
+    .result-panel{padding:14px;border-bottom:1px solid #eee;background:#f9f9f7;display:none;}
+    .result-panel.visible{display:block;}
+    .result-empty{font-size:14px;color:#999;text-align:center;padding:8px 0;}
+    .result-name{font-size:24px;font-weight:500;color:#111;margin-bottom:12px;line-height:1.2;}
+    .result-row{display:flex;align-items:center;gap:12px;}
+    .result-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:78px;height:78px;background:#EEEDFE;border-radius:12px;flex-shrink:0;}
+    .result-shelf-num{font-size:36px;font-weight:500;color:#3C3489;line-height:1;}
+    .result-shelf-lbl{font-size:11px;color:#534AB7;margin-top:2px;letter-spacing:0.05em;}
+    .result-section-label{font-size:12px;color:#999;margin-bottom:5px;}
+    .result-section-pill{display:inline-block;font-size:20px;font-weight:500;padding:6px 18px;border-radius:99px;}
+    .result-multi{display:flex;flex-direction:column;gap:8px;}
+    .result-multi-item{display:flex;align-items:center;gap:10px;background:#fff;border-radius:10px;border:1px solid #eee;padding:10px;}
+    .mini-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:50px;height:50px;background:#EEEDFE;border-radius:8px;flex-shrink:0;}
+    .mini-shelf-num{font-size:24px;font-weight:500;color:#3C3489;line-height:1;}
+    .mini-shelf-lbl{font-size:10px;color:#534AB7;letter-spacing:0.04em;}
+    .mini-name{font-size:13px;font-weight:500;color:#111;margin-bottom:3px;}
+    .mini-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:99px;}
+
+    .shelf-tabs{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid #eee;}
+    .shelf-tab{padding:10px 4px;font-size:12px;font-weight:500;color:#999;cursor:pointer;text-align:center;border-bottom:2px solid transparent;white-space:nowrap;}
+    .shelf-tab.active{color:#3C3489;border-bottom-color:#3C3489;}
+    .shelf-tab:hover{color:#534AB7;}
+
+    .hint{font-size:11px;color:#bbb;padding:6px 14px 0;text-align:center;}
+    .shelf-content{padding:10px 14px 8px;}
+    .section-block{margin-bottom:10px;}
+    .sec-label{font-size:11px;font-weight:500;color:#bbb;margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase;}
+    .tags-wrap{display:flex;flex-wrap:wrap;gap:5px;min-height:38px;border-radius:8px;border:1px dashed #ddd;padding:6px;transition:background 0.12s,border-color 0.12s;}
+    .tags-wrap.drop-active{background:#EEEDFE;border-color:#534AB7;border-style:solid;}
+
+    .tag{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:grab;user-select:none;touch-action:none;}
+    .tag.dragging-source{opacity:0.25;}
+    .tag.highlighted{outline:2.5px solid #D85A30;outline-offset:2px;}
+    .tag.selected{outline:2.5px solid #534AB7;outline-offset:2px;}
+    .tag .x{font-size:16px;opacity:0.4;line-height:1;margin-left:2px;cursor:pointer;}
+    .tag .x:hover{opacity:1;}
+    .top-tag{background:#EAF3DE;color:#27500A;}
+    .mid1-tag{background:#E6F1FB;color:#0C447C;}
+    .mid2-tag{background:#FAEEDA;color:#633806;}
+    .bot-tag{background:#FAECE7;color:#712B13;}
+
+    #ghost{position:fixed;pointer-events:none;z-index:9999;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;display:none;transform:rotate(2deg);box-shadow:0 2px 10px rgba(0,0,0,0.15);}
+
+    .move-panel{background:#f9f9f7;border-top:1px solid #eee;padding:12px 14px;display:none;}
+    .move-panel.visible{display:block;}
+    .move-title{font-size:13px;font-weight:500;color:#111;margin-bottom:2px;}
+    .move-winery{font-size:12px;color:#999;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .move-step-label{font-size:11px;color:#999;margin-bottom:6px;font-weight:500;}
+    .shelf-picker{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+    .shelf-picker button,.section-picker button{padding:7px 12px;font-size:12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
+    .shelf-picker button:hover,.section-picker button:hover{background:#f0f0f0;}
+    .shelf-picker button.picked,.section-picker button.picked{background:#EEEDFE;border-color:#534AB7;color:#3C3489;font-weight:500;}
+    .shelf-picker button:disabled{opacity:0.35;cursor:default;pointer-events:none;}
+    .section-picker{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
+    .confirm-btn{width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:8px;border:1px solid #534AB7;background:#EEEDFE;color:#3C3489;cursor:pointer;display:none;}
+    .confirm-btn:hover{background:#CECBF6;}
+    .confirm-btn.visible{display:block;}
+    .cancel-btn{width:100%;padding:8px;font-size:12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#999;cursor:pointer;margin-top:5px;}
+    .cancel-btn:hover{background:#f0f0f0;}
+
+    .add-bar{padding:10px 14px 14px;border-top:1px solid #eee;}
+    .add-bar-label{font-size:11px;font-weight:500;color:#bbb;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:7px;}
+    .add-bar input{width:100%;padding:9px 10px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;margin-bottom:6px;}
+    .add-bar input:focus{outline:none;box-shadow:0 0 0 2px rgba(83,74,183,0.15);}
+    .add-selects{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
+    .add-selects select{padding:8px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;}
+    .add-submit{width:100%;padding:9px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
+    .add-submit:hover{background:#f0f0f0;}
+    .add-submit:active{transform:scale(0.98);}
+
+    .bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 14px;gap:8px;}
+    .statusbar{font-size:11px;color:#bbb;}
+    .export-btn{padding:6px 12px;font-size:12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
+    .export-btn:hover{background:#f0f0f0;}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🍷 BC Wine Shelf Locator</h1>
-    <p class="subtitle">Enter a winery name to find its shelf location.</p>
+
+<div id="ghost"></div>
+
+<div class="screen">
+
+  <div class="topbar">
+    <div class="topbar-title">🍷 BC Wine Shelf Manager</div>
     <div class="search-row">
-      <input type="text" id="search" placeholder="Enter winery name…" autocomplete="off" />
-      <button id="go">Find</button>
-    </div>
-    <div id="result-area">
-      <p class="message">Enter a winery name above and press Find.</p>
+      <input type="text" id="mSearch" placeholder="Search winery..." onkeydown="if(event.key==='Enter')doSearch()" />
+      <button onclick="doSearch()">Find</button>
+      <button onclick="doClear()">Clear</button>
     </div>
   </div>
 
-  <script>
-    const data = [
-      ["Black sage",1,"Top"],["Lunessence",1,"Top"],["Solvers",1,"Top"],["O'Rurke's peak",1,"Top"],["Ex Nihilo",1,"Top"],["The vibrant",1,"Top"],["50th parallel",1,"Top"],
-      ["Priest creek",1,"Mid 1"],["Haywire",1,"Mid 1"],["Freeform",1,"Mid 1"],["Thornhaven",1,"Mid 1"],["Areowleaf",1,"Mid 1"],
-      ["Narrative",1,"Mid 2"],["The view",1,"Mid 2"],["Kalala",1,"Mid 2"],["Dirty Laundry",1,"Mid 2"],["Gray monk",1,"Mid 2"],["Intrigue social",1,"Mid 2"],
-      ["Kettle valley",1,"Bottom"],["Good natured",1,"Bottom"],["Sumac",1,"Bottom"],["Pellet family",1,"Bottom"],["Gray monk latitude",1,"Bottom"],
-      ["Volcanic",2,"Top"],["Tender",2,"Top"],["Tantalus",2,"Top"],["Frind",2,"Top"],
-      ["MT boucherie",2,"Mid 1"],["Screaming frenzy",2,"Mid 1"],["Cedar creek",2,"Mid 1"],["Five vineyard",2,"Mid 1"],
-      ["The hatch",2,"Mid 2"],["Quail gate",2,"Mid 2"],
-      ["Grow wild",2,"Bottom"],["Sandhill",2,"Bottom"],["Raven",2,"Bottom"],["Peller family",2,"Bottom"],["Summerhill",2,"Bottom"],
-      ["La Franz",3,"Top"],["Nichol",3,"Top"],["Laughing Stock",3,"Top"],["Da Silva vineyards",3,"Top"],["Little engine elevation",3,"Top"],["Popular grove",3,"Top"],
-      ["Bench 1775",3,"Mid 1"],["Lock & worth",3,"Mid 1"],["IMBZZL",3,"Mid 1"],["Roche",3,"Mid 1"],["Pentagram Washington",3,"Mid 1"],["Pentage Hiatus",3,"Mid 1"],["Chronos",3,"Mid 1"],["Josie",3,"Mid 1"],["Monster",3,"Mid 1"],
-      ["Red rooster",3,"Mid 2"],["Tightrope",3,"Mid 2"],["Three sister",3,"Mid 2"],["Moraine",3,"Mid 2"],
-      ["Evolve",3,"Bottom"],["Hillside",3,"Bottom"],["Therapy",3,"Bottom"],["Lake breeze",3,"Bottom"],
-      ["Blasted church",4,"Top"],["Blue mountain",4,"Top"],["Stags hallow",4,"Top"],["Winemaker's cut",4,"Top"],["River stone",4,"Top"],["Hester creek",4,"Top"],
-      ["Blasted church Washington",4,"Mid 1"],["Bonomici",4,"Mid 1"],
-      ["Wild goose",4,"Mid 2"],["Road 13",4,"Mid 2"],["Saintly rose",4,"Mid 2"],
-      ["See ya later ranch",4,"Bottom"],["Noble ridge",4,"Bottom"],["Inniskillin",4,"Bottom"],
-      ["Curious incident",5,"Top"],["Calliope figure 8",5,"Top"],["Q&A",5,"Top"],["Cassini",5,"Top"],["Fairview",5,"Top"],["Burrow owl",5,"Top"],["Liquidity",5,"Top"],["Maverick",5,"Top"],["Le vieux pin",5,"Top"],
-      ["Jackson-Griggs reserve",5,"Mid 1"],["Church & state",5,"Mid 1"],["Silver sage",5,"Mid 1"],["Rust",5,"Mid 1"],
-      ["OkV",5,"Mid 2"],["Church and State lost inhibition",5,"Mid 2"],["Tinhorn",5,"Mid 2"],["Sunrock",5,"Mid 2"],["Stoneboat",5,"Mid 2"],
-      ["Vintage ink",5,"Bottom"],["Diabolical",5,"Bottom"],["Grinder",5,"Bottom"],
-      ["Moon curser",6,"Top"],["Clos du soleil",6,"Top"],["Unsworth",6,"Top"],["Corcelettes",6,"Top"],["Phoenix Washington",6,"Top"],["Tawse quarry",6,"Top"],["Tawse grower's",6,"Top"],["Henry of Pelham",6,"Top"],
-      ["La Stella",6,"Mid 1"],["Lakeside",6,"Mid 1"],["Orofino",6,"Mid 1"],["Alders",6,"Mid 1"],["Fort Beren's",6,"Mid 1"],["Robin ridge",6,"Mid 1"],["Blue grouse",6,"Mid 1"],["Blue grouse quill",6,"Mid 1"],
-      ["Border town",6,"Mid 2"],["Adela on 45th",6,"Mid 2"],["Nk'mip",6,"Mid 2"],["Country vine",6,"Mid 2"],["Fort berens",6,"Mid 2"],["Seastar",6,"Mid 2"],["Sage Hayward",6,"Mid 2"],["Adega",6,"Mid 2"],
-      ["Monte Creek",6,"Bottom"],["Country wine",6,"Bottom"],["Chaberton",6,"Bottom"]
-    ];
+  <div class="result-panel" id="resultPanel"><div id="resultInner"></div></div>
 
-    const sectionClass = s => ({ "Top":"top","Mid 1":"mid1","Mid 2":"mid2","Bottom":"bottom" }[s] || "bottom");
+  <div class="shelf-tabs" id="shelfTabs"></div>
+  <div class="hint">Drag tag to move within shelf &nbsp;·&nbsp; Click tag to move across shelves</div>
+  <div class="shelf-content" id="shelfContent"></div>
 
-    function makeCard(name, shelf, section) {
-      return `<div class="result-card">
-        <div class="shelf-badge">
-          <span class="shelf-num">${shelf}</span>
-          <span class="shelf-label">SHELF</span>
-        </div>
-        <div class="info">
-          <div class="winery-name">${name}</div>
-          <span class="section-pill ${sectionClass(section)}">${section}</span>
-        </div>
+  <div class="move-panel" id="movePanel">
+    <div class="move-title">Move to another shelf</div>
+    <div class="move-winery" id="moveName"></div>
+    <div class="move-step-label">1. Pick shelf</div>
+    <div class="shelf-picker" id="shelfPicker"></div>
+    <div class="move-step-label">2. Pick section</div>
+    <div class="section-picker" id="sectionPicker"></div>
+    <button class="confirm-btn" id="confirmBtn" onclick="confirmMove()">Confirm move</button>
+    <button class="cancel-btn" onclick="cancelMove()">Cancel</button>
+  </div>
+
+  <div class="add-bar">
+    <div class="add-bar-label">Add winery</div>
+    <input type="text" id="mNewName" placeholder="Winery name..." />
+    <div class="add-selects">
+      <select id="mNewShelf">
+        <option value="1">Shelf 1</option><option value="2">Shelf 2</option>
+        <option value="3">Shelf 3</option><option value="4">Shelf 4</option>
+        <option value="5">Shelf 5</option><option value="6">Shelf 6</option>
+      </select>
+      <select id="mNewSection">
+        <option>Top</option><option>Mid 1</option><option>Mid 2</option><option>Bottom</option>
+      </select>
+    </div>
+    <button class="add-submit" onclick="mAdd()">+ Add winery</button>
+  </div>
+
+  <div class="bottom-bar">
+    <span class="statusbar" id="statusBar"></span>
+    <button class="export-btn" onclick="exportCSV()">&#8595; Export CSV</button>
+  </div>
+
+</div>
+
+<script>
+const SECTIONS=["Top","Mid 1","Mid 2","Bottom"];
+const tcls=s=>({Top:"top-tag","Mid 1":"mid1-tag","Mid 2":"mid2-tag",Bottom:"bot-tag"}[s]||"top-tag");
+const bgOf=s=>({Top:"#EAF3DE","Mid 1":"#E6F1FB","Mid 2":"#FAEEDA",Bottom:"#FAECE7"}[s]||"#eee");
+const fgOf=s=>({Top:"#27500A","Mid 1":"#0C447C","Mid 2":"#633806",Bottom:"#712B13"}[s]||"#111");
+
+let db=[
+  ["Black sage",1,"Top"],["Lunessence",1,"Top"],["Solvers",1,"Top"],["O'Rurke's peak",1,"Top"],["Ex Nihilo",1,"Top"],["The vibrant",1,"Top"],["50th parallel",1,"Top"],
+  ["Priest creek",1,"Mid 1"],["Haywire",1,"Mid 1"],["Freeform",1,"Mid 1"],["Thornhaven",1,"Mid 1"],["Areowleaf",1,"Mid 1"],
+  ["Narrative",1,"Mid 2"],["The view",1,"Mid 2"],["Kalala",1,"Mid 2"],["Dirty Laundry",1,"Mid 2"],["Gray monk",1,"Mid 2"],["Intrigue social",1,"Mid 2"],
+  ["Kettle valley",1,"Bottom"],["Good natured",1,"Bottom"],["Sumac",1,"Bottom"],["Pellet family",1,"Bottom"],["Gray monk latitude",1,"Bottom"],
+  ["Volcanic",2,"Top"],["Tender",2,"Top"],["Tantalus",2,"Top"],["Frind",2,"Top"],
+  ["MT boucherie",2,"Mid 1"],["Screaming frenzy",2,"Mid 1"],["Cedar creek",2,"Mid 1"],["Five vineyard",2,"Mid 1"],
+  ["The hatch",2,"Mid 2"],["Quail gate",2,"Mid 2"],
+  ["Grow wild",2,"Bottom"],["Sandhill",2,"Bottom"],["Raven",2,"Bottom"],["Peller family",2,"Bottom"],["Summerhill",2,"Bottom"],
+  ["La Franz",3,"Top"],["Nichol",3,"Top"],["Laughing Stock",3,"Top"],["Da Silva vineyards",3,"Top"],["Little engine elevation",3,"Top"],["Popular grove",3,"Top"],
+  ["Bench 1775",3,"Mid 1"],["Lock & worth",3,"Mid 1"],["IMBZZL",3,"Mid 1"],["Roche",3,"Mid 1"],["Pentagram Washington",3,"Mid 1"],["Pentage Hiatus",3,"Mid 1"],["Chronos",3,"Mid 1"],["Josie",3,"Mid 1"],["Monster",3,"Mid 1"],
+  ["Red rooster",3,"Mid 2"],["Tightrope",3,"Mid 2"],["Three sister",3,"Mid 2"],["Moraine",3,"Mid 2"],
+  ["Evolve",3,"Bottom"],["Hillside",3,"Bottom"],["Therapy",3,"Bottom"],["Lake breeze",3,"Bottom"],
+  ["Blasted church",4,"Top"],["Blue mountain",4,"Top"],["Stags hallow",4,"Top"],["Winemaker's cut",4,"Top"],["River stone",4,"Top"],["Hester creek",4,"Top"],
+  ["Blasted church Washington",4,"Mid 1"],["Bonomici",4,"Mid 1"],
+  ["Wild goose",4,"Mid 2"],["Road 13",4,"Mid 2"],["Saintly rose",4,"Mid 2"],
+  ["See ya later ranch",4,"Bottom"],["Noble ridge",4,"Bottom"],["Inniskillin",4,"Bottom"],
+  ["Curious incident",5,"Top"],["Calliope figure 8",5,"Top"],["Q&A",5,"Top"],["Cassini",5,"Top"],["Fairview",5,"Top"],["Burrow owl",5,"Top"],["Liquidity",5,"Top"],["Maverick",5,"Top"],["Le vieux pin",5,"Top"],
+  ["Jackson-Griggs reserve",5,"Mid 1"],["Church & state",5,"Mid 1"],["Silver sage",5,"Mid 1"],["Rust",5,"Mid 1"],
+  ["OkV",5,"Mid 2"],["Church and State lost inhibition",5,"Mid 2"],["Tinhorn",5,"Mid 2"],["Sunrock",5,"Mid 2"],["Stoneboat",5,"Mid 2"],
+  ["Vintage ink",5,"Bottom"],["Diabolical",5,"Bottom"],["Grinder",5,"Bottom"],
+  ["Moon curser",6,"Top"],["Clos du soleil",6,"Top"],["Unsworth",6,"Top"],["Corcelettes",6,"Top"],["Phoenix Washington",6,"Top"],["Tawse quarry",6,"Top"],["Tawse grower's",6,"Top"],["Henry of Pelham",6,"Top"],
+  ["La Stella",6,"Mid 1"],["Lakeside",6,"Mid 1"],["Orofino",6,"Mid 1"],["Alders",6,"Mid 1"],["Fort Beren's",6,"Mid 1"],["Robin ridge",6,"Mid 1"],["Blue grouse",6,"Mid 1"],["Blue grouse quill",6,"Mid 1"],
+  ["Border town",6,"Mid 2"],["Adela on 45th",6,"Mid 2"],["Nk'mip",6,"Mid 2"],["Country vine",6,"Mid 2"],["Fort berens",6,"Mid 2"],["Seastar",6,"Mid 2"],["Sage Hayward",6,"Mid 2"],["Adega",6,"Mid 2"],
+  ["Monte Creek",6,"Bottom"],["Country wine",6,"Bottom"],["Chaberton",6,"Bottom"]
+];
+
+let activeShelf=1,selectedIdx=null,targetShelf=null,targetSection=null;
+let dragIdx=null,isDragging=false,dragStartX=0,dragStartY=0;
+const ghost=document.getElementById("ghost");
+const THRESHOLD=6;
+
+function getXY(e){
+  if(e.touches&&e.touches[0])return{x:e.touches[0].clientX,y:e.touches[0].clientY};
+  if(e.changedTouches&&e.changedTouches[0])return{x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY};
+  return{x:e.clientX,y:e.clientY};
+}
+
+function startDrag(e,idx,name,section,tag){
+  if(e.target.classList.contains("x"))return;
+  const{x,y}=getXY(e);
+  dragIdx=idx;isDragging=false;dragStartX=x;dragStartY=y;
+  ghost.textContent=name;
+  ghost.style.background=bgOf(section);
+  ghost.style.color=fgOf(section);
+
+  const onMove=ev=>{
+    const{x:cx,y:cy}=getXY(ev);
+    if(!isDragging){
+      if(Math.abs(cx-dragStartX)>THRESHOLD||Math.abs(cy-dragStartY)>THRESHOLD){
+        isDragging=true;ghost.style.display="block";tag.classList.add("dragging-source");cancelMove();
+      }else return;
+    }
+    if(ev.cancelable)ev.preventDefault();
+    ghost.style.left=(cx-40)+"px";ghost.style.top=(cy-18)+"px";
+    document.querySelectorAll(".tags-wrap").forEach(w=>w.classList.remove("drop-active"));
+    const el=document.elementFromPoint(cx,cy);
+    const wrap=el&&el.closest(".tags-wrap");
+    if(wrap)wrap.classList.add("drop-active");
+  };
+
+  const onEnd=ev=>{
+    document.removeEventListener("mousemove",onMove);document.removeEventListener("mouseup",onEnd);
+    document.removeEventListener("touchmove",onMove);document.removeEventListener("touchend",onEnd);
+    ghost.style.display="none";
+    document.querySelectorAll(".tags-wrap").forEach(w=>w.classList.remove("drop-active"));
+    tag.classList.remove("dragging-source");
+    if(!isDragging){dragIdx=null;isDragging=false;openMovePanel(idx);return;}
+    const{x:ex,y:ey}=getXY(ev);
+    const el=document.elementFromPoint(ex,ey);
+    const wrap=el&&el.closest(".tags-wrap");
+    if(wrap&&wrap.dataset.section&&wrap.dataset.section!==db[dragIdx][2]){
+      db[dragIdx][2]=wrap.dataset.section;renderShelf();
+    }
+    dragIdx=null;isDragging=false;
+  };
+
+  document.addEventListener("mousemove",onMove);
+  document.addEventListener("mouseup",onEnd);
+  document.addEventListener("touchmove",onMove,{passive:false});
+  document.addEventListener("touchend",onEnd);
+}
+
+function buildTabs(){
+  const tabs=document.getElementById("shelfTabs");
+  tabs.innerHTML="";
+  for(let s=1;s<=6;s++){
+    const t=document.createElement("div");
+    t.className="shelf-tab"+(s===activeShelf?" active":"");
+    t.textContent="Shelf "+s;
+    t.onclick=()=>{activeShelf=s;cancelMove();buildTabs();renderShelf();};
+    tabs.appendChild(t);
+  }
+}
+
+function renderShelf(){
+  const content=document.getElementById("shelfContent");
+  content.innerHTML="";
+  SECTIONS.forEach(sec=>{
+    const block=document.createElement("div");block.className="section-block";
+    const lbl=document.createElement("div");lbl.className="sec-label";lbl.textContent=sec;block.appendChild(lbl);
+    const wrap=document.createElement("div");wrap.className="tags-wrap";wrap.dataset.section=sec;
+    db.forEach(([name,shelf,section],idx)=>{
+      if(shelf!==activeShelf||section!==sec)return;
+      const tag=document.createElement("div");
+      tag.className=`tag ${tcls(section)}${selectedIdx===idx?" selected":""}`;
+      tag.innerHTML=`<span>${name}</span><span class="x">×</span>`;
+      tag.querySelector(".x").onclick=e=>{e.stopPropagation();db.splice(idx,1);selectedIdx=null;cancelMove();renderShelf();};
+      tag.onmousedown=e=>startDrag(e,idx,name,section,tag);
+      tag.ontouchstart=e=>startDrag(e,idx,name,section,tag);
+      wrap.appendChild(tag);
+    });
+    block.appendChild(wrap);content.appendChild(block);
+  });
+  updateStatus();
+}
+
+function showResult(matches){
+  const panel=document.getElementById("resultPanel");
+  const inner=document.getElementById("resultInner");
+  if(!matches||matches.length===0){
+    panel.className="result-panel visible";
+    inner.innerHTML=`<div class="result-empty">No winery found — check the spelling.</div>`;
+    return;
+  }
+  panel.className="result-panel visible";
+  if(matches.length===1){
+    const[name,shelf,section]=matches[0];
+    inner.innerHTML=`
+      <div class="result-name">${name}</div>
+      <div class="result-row">
+        <div class="result-badge"><span class="result-shelf-num">${shelf}</span><span class="result-shelf-lbl">SHELF</span></div>
+        <div style="flex:1"><div class="result-section-label">Section</div><span class="result-section-pill ${tcls(section)}">${section}</span></div>
       </div>`;
-    }
+  }else{
+    inner.innerHTML=`<div class="result-multi">${matches.map(([name,shelf,section])=>`
+      <div class="result-multi-item">
+        <div class="mini-badge"><span class="mini-shelf-num">${shelf}</span><span class="mini-shelf-lbl">SHELF</span></div>
+        <div><div class="mini-name">${name}</div><span class="mini-pill ${tcls(section)}">${section}</span></div>
+      </div>`).join("")}</div>`;
+  }
+}
 
-    function doSearch() {
-      const q = document.getElementById("search").value.trim().toLowerCase();
-      const area = document.getElementById("result-area");
-      if (!q) { area.innerHTML = '<p class="message">Please enter a winery name.</p>'; return; }
-      const matches = data.filter(([name]) => name.toLowerCase().includes(q));
-      if (!matches.length) {
-        area.innerHTML = '<p class="err">No winery found. Check the spelling and try again.</p>';
-        return;
-      }
-      area.innerHTML = matches.map(m => makeCard(...m)).join('');
-    }
+function doSearch(){
+  const q=document.getElementById("mSearch").value.trim().toLowerCase();
+  if(!q){doClear();return;}
+  const matches=db.filter(([n])=>n.toLowerCase().includes(q));
+  showResult(matches);
+  if(matches.length>0){
+    activeShelf=matches[0][1];cancelMove();buildTabs();renderShelf();
+    setTimeout(()=>{
+      document.querySelectorAll(".tag span:first-child").forEach(s=>{
+        if(s.textContent.toLowerCase().includes(q))s.parentElement.classList.add("highlighted");
+      });
+    },30);
+  }
+}
 
-    document.getElementById("go").addEventListener("click", doSearch);
-    document.getElementById("search").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
-  </script>
+function doClear(){
+  document.getElementById("mSearch").value="";
+  document.getElementById("resultPanel").className="result-panel";
+  document.querySelectorAll(".tag").forEach(t=>t.classList.remove("highlighted"));
+  updateStatus();
+}
+
+function openMovePanel(idx){
+  selectedIdx=idx;targetShelf=null;targetSection=null;renderShelf();
+  document.getElementById("moveName").textContent=db[idx][0];
+  document.getElementById("movePanel").className="move-panel visible";
+  const sp=document.getElementById("shelfPicker");sp.innerHTML="";
+  for(let s=1;s<=6;s++){
+    const btn=document.createElement("button");
+    btn.textContent="Shelf "+s;
+    if(s===db[idx][1])btn.disabled=true;
+    btn.onclick=()=>{
+      targetShelf=s;
+      document.querySelectorAll(".shelf-picker button").forEach(b=>b.classList.remove("picked"));
+      btn.classList.add("picked");
+      buildSectionPicker();
+    };
+    sp.appendChild(btn);
+  }
+  document.getElementById("sectionPicker").innerHTML=`<div style="grid-column:span 2;font-size:12px;color:#bbb;padding:4px 0;">Pick a shelf first</div>`;
+  document.getElementById("confirmBtn").className="confirm-btn";
+}
+
+function buildSectionPicker(){
+  const sp=document.getElementById("sectionPicker");sp.innerHTML="";
+  SECTIONS.forEach(sec=>{
+    const btn=document.createElement("button");btn.textContent=sec;
+    btn.onclick=()=>{
+      targetSection=sec;
+      document.querySelectorAll(".section-picker button").forEach(b=>b.classList.remove("picked"));
+      btn.classList.add("picked");
+      document.getElementById("confirmBtn").className="confirm-btn visible";
+    };
+    sp.appendChild(btn);
+  });
+}
+
+function confirmMove(){
+  if(selectedIdx===null||targetShelf===null||targetSection===null)return;
+  db[selectedIdx][1]=targetShelf;db[selectedIdx][2]=targetSection;
+  activeShelf=targetShelf;cancelMove();buildTabs();renderShelf();
+}
+
+function cancelMove(){
+  selectedIdx=null;targetShelf=null;targetSection=null;
+  document.getElementById("movePanel").className="move-panel";
+  document.getElementById("confirmBtn").className="confirm-btn";
+}
+
+function mAdd(){
+  const name=document.getElementById("mNewName").value.trim();
+  if(!name)return;
+  const shelf=parseInt(document.getElementById("mNewShelf").value);
+  const section=document.getElementById("mNewSection").value;
+  db.push([name,shelf,section]);
+  activeShelf=shelf;
+  document.getElementById("mNewName").value="";
+  cancelMove();buildTabs();renderShelf();
+}
+
+function exportCSV(){
+  let csv="Winery,Shelf,Section\n";
+  db.forEach(([n,s,sec])=>{csv+=`"${n}",${s},"${sec}"\n`;});
+  const a=document.createElement("a");
+  a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
+  a.download="bc_wine_shelf_layout.csv";
+  a.click();
+}
+
+function updateStatus(){
+  document.getElementById("statusBar").textContent=`${db.length} wineries · Shelf ${activeShelf}`;
+}
+
+buildTabs();renderShelf();
+</script>
 </body>
 </html>
