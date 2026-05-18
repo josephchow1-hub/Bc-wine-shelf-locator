@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BC Wine Shelf Locator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f0; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
+    .container { width: 100%; max-width: 520px; }
+    h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.25rem; color: #111; }
+    .subtitle { font-size: 14px; color: #777; margin-bottom: 1.5rem; }
+    .search-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+    #search { flex: 1; padding: 10px 14px; font-size: 15px; border-radius: 8px; border: 1px solid #ccc; background: #fff; color: #111; }
+    #search:focus { outline: none; border-color: #888; box-shadow: 0 0 0 2px rgba(100,100,200,0.15); }
+    button#go { padding: 10px 20px; font-size: 15px; border-radius: 8px; border: 1px solid #ccc; background: #fff; color: #111; cursor: pointer; }
+    button#go:hover { background: #f0f0f0; }
+    button#go:active { transform: scale(0.97); }
+    #result-area { min-height: 80px; }
+    .result-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.5rem; display: flex; gap: 20px; align-items: center; margin-bottom: 10px; }
+    .shelf-badge { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 72px; height: 72px; background: #EEEDFE; border-radius: 8px; flex-shrink: 0; }
+    .shelf-num { font-size: 28px; font-weight: 500; color: #3C3489; line-height: 1; }
+    .shelf-label { font-size: 11px; color: #534AB7; margin-top: 3px; letter-spacing: 0.04em; }
+    .info { flex: 1; }
+    .winery-name { font-size: 18px; font-weight: 500; color: #111; margin-bottom: 8px; }
+    .section-pill { display: inline-block; font-size: 13px; padding: 4px 14px; border-radius: 99px; }
+    .top    { background: #EAF3DE; color: #3B6D11; }
+    .mid1   { background: #E6F1FB; color: #185FA5; }
+    .mid2   { background: #FAEEDA; color: #854F0B; }
+    .bottom { background: #FAECE7; color: #993C1D; }
+    .message { font-size: 14px; color: #888; text-align: center; padding: 2rem 0; }
+    .err { font-size: 14px; color: #993C1D; text-align: center; padding: 2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍷 BC Wine Shelf Locator</h1>
+    <p class="subtitle">Enter a winery name to find its shelf location.</p>
+    <div class="search-row">
+      <input type="text" id="search" placeholder="Enter winery name…" autocomplete="off" />
+      <button id="go">Find</button>
+    </div>
+    <div id="result-area">
+      <p class="message">Enter a winery name above and press Find.</p>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      ["Black sage",1,"Top"],["Lunessence",1,"Top"],["Solvers",1,"Top"],["O'Rurke's peak",1,"Top"],["Ex Nihilo",1,"Top"],["The vibrant",1,"Top"],["50th parallel",1,"Top"],
+      ["Priest creek",1,"Mid 1"],["Haywire",1,"Mid 1"],["Freeform",1,"Mid 1"],["Thornhaven",1,"Mid 1"],["Areowleaf",1,"Mid 1"],
+      ["Narrative",1,"Mid 2"],["The view",1,"Mid 2"],["Kalala",1,"Mid 2"],["Dirty Laundry",1,"Mid 2"],["Gray monk",1,"Mid 2"],["Intrigue social",1,"Mid 2"],
+      ["Kettle valley",1,"Bottom"],["Good natured",1,"Bottom"],["Sumac",1,"Bottom"],["Pellet family",1,"Bottom"],["Gray monk latitude",1,"Bottom"],
+      ["Volcanic",2,"Top"],["Tender",2,"Top"],["Tantalus",2,"Top"],["Frind",2,"Top"],
+      ["MT boucherie",2,"Mid 1"],["Screaming frenzy",2,"Mid 1"],["Cedar creek",2,"Mid 1"],["Five vineyard",2,"Mid 1"],
+      ["The hatch",2,"Mid 2"],["Quail gate",2,"Mid 2"],
+      ["Grow wild",2,"Bottom"],["Sandhill",2,"Bottom"],["Raven",2,"Bottom"],["Pellet family",2,"Bottom"],["Summerhill",2,"Bottom"],
+      ["La Franz",3,"Top"],["Nichol",3,"Top"],["Laughing Stock",3,"Top"],["Da Silva vineyards",3,"Top"],["Little engine elevation",3,"Top"],["Popular grove",3,"Top"],
+      ["Bench 1775",3,"Mid 1"],["Lock & worth",3,"Mid 1"],["IMBZZL",3,"Mid 1"],["Roche",3,"Mid 1"],["Pentagram Washington",3,"Mid 1"],["Pentage Hiatus",3,"Mid 1"],["Chronos",3,"Mid 1"],["Josie",3,"Mid 1"],["Monster",3,"Mid 1"],
+      ["Red rooster",3,"Mid 2"],["Tightrope",3,"Mid 2"],["Three sister",3,"Mid 2"],["Moraine",3,"Mid 2"],
+      ["Evolve",3,"Bottom"],["Hillside",3,"Bottom"],["Therapy",3,"Bottom"],["Lake breeze",3,"Bottom"],
+      ["Blasted church",4,"Top"],["Blue mountain",4,"Top"],["Stags hallow",4,"Top"],["Winemaker's cut",4,"Top"],["River stone",4,"Top"],["Hester creek",4,"Top"],
+      ["Blasted church Washington",4,"Mid 1"],["Bonomici",4,"Mid 1"],
+      ["Wild goose",4,"Mid 2"],["Road 13",4,"Mid 2"],["Saintly rose",4,"Mid 2"],
+      ["See ya later ranch",4,"Bottom"],["Noble ridge",4,"Bottom"],["Inniskillin",4,"Bottom"],
+      ["Curious incident",5,"Top"],["Calliope figure 8",5,"Top"],["Q&A",5,"Top"],["Cassini",5,"Top"],["Fairview",5,"Top"],["Burrow owl",5,"Top"],["Liquidity",5,"Top"],["Maverick",5,"Top"],["Le vieux pin",5,"Top"],
+      ["Jackson-Griggs reserve",5,"Mid 1"],["Church & state",5,"Mid 1"],["Silver sage",5,"Mid 1"],["Rust",5,"Mid 1"],
+      ["OkV",5,"Mid 2"],["Church and State lost inhibition",5,"Mid 2"],["Tinhorn",5,"Mid 2"],["Sunrock",5,"Mid 2"],["Stoneboat",5,"Mid 2"],
+      ["Vintage ink",5,"Bottom"],["Diabolical",5,"Bottom"],["Grinder",5,"Bottom"],
+      ["Moon curser",6,"Top"],["Clos du soleil",6,"Top"],["Unsworth",6,"Top"],["Corcelettes",6,"Top"],["Phoenix Washington",6,"Top"],["Tawse quarry",6,"Top"],["Tawse grower's",6,"Top"],["Henry of Pelham",6,"Top"],
+      ["La Stella",6,"Mid 1"],["Lakeside",6,"Mid 1"],["Orofino",6,"Mid 1"],["Alders",6,"Mid 1"],["Fort Berens",6,"Mid 1"],["Robin ridge",6,"Mid 1"],["Blue grouse",6,"Mid 1"],["Blue grouse quill",6,"Mid 1"],
+      ["Border town",6,"Mid 2"],["Adela on 45th",6,"Mid 2"],["Nk'mip",6,"Mid 2"],["Country vine",6,"Mid 2"],["Fort berens",6,"Mid 2"],["Seastar",6,"Mid 2"],["Sage Hayward",6,"Mid 2"],["Adega",6,"Mid 2"],
+      ["Monte Creek",6,"Bottom"],["Country wine",6,"Bottom"],["Chaberton",6,"Bottom"]
+    ];
+
+    const sectionClass = s => ({ "Top":"top","Mid 1":"mid1","Mid 2":"mid2","Bottom":"bottom" }[s] || "bottom");
+
+    function makeCard(name, shelf, section) {
+      return `<div class="result-card">
+        <div class="shelf-badge">
+          <span class="shelf-num">${shelf}</span>
+          <span class="shelf-label">SHELF</span>
+        </div>
+        <div class="info">
+          <div class="winery-name">${name}</div>
+          <span class="section-pill ${sectionClass(section)}">${section}</span>
+        </div>
+      </div>`;
+    }
+
+    function doSearch() {
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const area = document.getElementById("result-area");
+      if (!q) { area.innerHTML = '<p class="message">Please enter a winery name.</p>'; return; }
+      const matches = data.filter(([name]) => name.toLowerCase().includes(q));
+      if (!matches.length) {
+        area.innerHTML = '<p class="err">No winery found. Check the spelling and try again.</p>';
+        return;
+      }
+      area.innerHTML = matches.map(m => makeCard(...m)).join('');
+    }
+
+    document.getElementById("go").addEventListener("click", doSearch);
+    document.getElementById("search").addEventListener("keydown", e => { if (e.key === "Enter") doSearch(); });
+  </script>
+</body>
+</html>
