@@ -1,1 +1,1 @@
-# Bc-wine-shelf-locator
+# Bc-wine-Shelf-Manager
