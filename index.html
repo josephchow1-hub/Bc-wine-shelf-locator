@@ -8,7 +8,6 @@
     *{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:system-ui,sans-serif;background:#f5f5f0;min-height:100vh;display:flex;justify-content:center;padding:1.5rem 1rem;}
     .screen{background:#fff;border-radius:16px;border:1px solid #e5e5e5;overflow:hidden;width:100%;max-width:440px;align-self:flex-start;}
-
     .topbar{padding:14px 14px 10px;border-bottom:1px solid #eee;}
     .topbar-title{font-size:17px;font-weight:500;color:#111;margin-bottom:8px;}
     .search-row{display:flex;gap:6px;}
@@ -17,7 +16,6 @@
     .search-row button{padding:9px 13px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
     .search-row button:hover{background:#f0f0f0;}
     .search-row button:active{transform:scale(0.97);}
-
     .result-panel{padding:14px;border-bottom:1px solid #eee;background:#f9f9f7;display:none;}
     .result-panel.visible{display:block;}
     .result-empty{font-size:14px;color:#999;text-align:center;padding:8px 0;}
@@ -35,19 +33,16 @@
     .mini-shelf-lbl{font-size:10px;color:#534AB7;letter-spacing:0.04em;}
     .mini-name{font-size:13px;font-weight:500;color:#111;margin-bottom:3px;}
     .mini-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:99px;}
-
     .shelf-tabs{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid #eee;}
     .shelf-tab{padding:10px 4px;font-size:12px;font-weight:500;color:#999;cursor:pointer;text-align:center;border-bottom:2px solid transparent;white-space:nowrap;}
     .shelf-tab.active{color:#3C3489;border-bottom-color:#3C3489;}
     .shelf-tab:hover{color:#534AB7;}
-
     .hint{font-size:11px;color:#bbb;padding:6px 14px 0;text-align:center;}
     .shelf-content{padding:10px 14px 8px;}
     .section-block{margin-bottom:10px;}
     .sec-label{font-size:11px;font-weight:500;color:#bbb;margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase;}
     .tags-wrap{display:flex;flex-wrap:wrap;gap:5px;min-height:38px;border-radius:8px;border:1px dashed #ddd;padding:6px;transition:background 0.12s,border-color 0.12s;}
     .tags-wrap.drop-active{background:#EEEDFE;border-color:#534AB7;border-style:solid;}
-
     .tag{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:grab;user-select:none;touch-action:none;}
     .tag.dragging-source{opacity:0.25;}
     .tag.highlighted{outline:2.5px solid #D85A30;outline-offset:2px;}
@@ -58,9 +53,7 @@
     .mid1-tag{background:#E6F1FB;color:#0C447C;}
     .mid2-tag{background:#FAEEDA;color:#633806;}
     .bot-tag{background:#FAECE7;color:#712B13;}
-
     #ghost{position:fixed;pointer-events:none;z-index:9999;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;display:none;transform:rotate(2deg);box-shadow:0 2px 10px rgba(0,0,0,0.15);}
-
     .move-panel{background:#f9f9f7;border-top:1px solid #eee;padding:12px 14px;display:none;}
     .move-panel.visible{display:block;}
     .move-title{font-size:13px;font-weight:500;color:#111;margin-bottom:2px;}
@@ -77,7 +70,6 @@
     .confirm-btn.visible{display:block;}
     .cancel-btn{width:100%;padding:8px;font-size:12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#999;cursor:pointer;margin-top:5px;}
     .cancel-btn:hover{background:#f0f0f0;}
-
     .add-bar{padding:10px 14px 14px;border-top:1px solid #eee;}
     .add-bar-label{font-size:11px;font-weight:500;color:#bbb;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:7px;}
     .add-bar input{width:100%;padding:9px 10px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;margin-bottom:6px;}
@@ -87,7 +79,6 @@
     .add-submit{width:100%;padding:9px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
     .add-submit:hover{background:#f0f0f0;}
     .add-submit:active{transform:scale(0.98);}
-
     .bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 14px;gap:8px;}
     .statusbar{font-size:11px;color:#bbb;}
     .export-btn{padding:6px 12px;font-size:12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
@@ -95,11 +86,8 @@
   </style>
 </head>
 <body>
-
 <div id="ghost"></div>
-
 <div class="screen">
-
   <div class="topbar">
     <div class="topbar-title">🍷 BC Wine Shelf Manager</div>
     <div class="search-row">
@@ -108,13 +96,10 @@
       <button onclick="doClear()">Clear</button>
     </div>
   </div>
-
   <div class="result-panel" id="resultPanel"><div id="resultInner"></div></div>
-
   <div class="shelf-tabs" id="shelfTabs"></div>
   <div class="hint">Drag tag to move within shelf &nbsp;·&nbsp; Click tag to move across shelves</div>
   <div class="shelf-content" id="shelfContent"></div>
-
   <div class="move-panel" id="movePanel">
     <div class="move-title">Move to another shelf</div>
     <div class="move-winery" id="moveName"></div>
@@ -125,7 +110,6 @@
     <button class="confirm-btn" id="confirmBtn" onclick="confirmMove()">Confirm move</button>
     <button class="cancel-btn" onclick="cancelMove()">Cancel</button>
   </div>
-
   <div class="add-bar">
     <div class="add-bar-label">Add winery</div>
     <input type="text" id="mNewName" placeholder="Winery name..." />
@@ -141,12 +125,10 @@
     </div>
     <button class="add-submit" onclick="mAdd()">+ Add winery</button>
   </div>
-
   <div class="bottom-bar">
     <span class="statusbar" id="statusBar"></span>
     <button class="export-btn" onclick="exportCSV()">&#8595; Export CSV</button>
   </div>
-
 </div>
 
 <script>
@@ -157,29 +139,29 @@ const fgOf=s=>({Top:"#27500A","Mid 1":"#0C447C","Mid 2":"#633806",Bottom:"#712B1
 
 let db=[
   ["Black sage",1,"Top"],["Lunessence",1,"Top"],["Solvers",1,"Top"],["O'Rurke's peak",1,"Top"],["Ex Nihilo",1,"Top"],["The vibrant",1,"Top"],["50th parallel",1,"Top"],
-  ["Priest creek",1,"Mid 1"],["Haywire",1,"Mid 1"],["Freeform",1,"Mid 1"],["Thornhaven",1,"Mid 1"],["Areowleaf",1,"Mid 1"],
+  ["Priest creek",1,"Mid 1"],["Haywire",1,"Mid 1"],["Freeform",1,"Mid 1"],["Thornhaven",1,"Mid 1"],["Arrowleaf",1,"Mid 1"],
   ["Narrative",1,"Mid 2"],["The view",1,"Mid 2"],["Kalala",1,"Mid 2"],["Dirty Laundry",1,"Mid 2"],["Gray monk",1,"Mid 2"],["Intrigue social",1,"Mid 2"],
-  ["Kettle valley",1,"Bottom"],["Good natured",1,"Bottom"],["Sumac",1,"Bottom"],["Pellet family",1,"Bottom"],["Gray monk latitude",1,"Bottom"],
-  ["Volcanic",2,"Top"],["Tender",2,"Top"],["Tantalus",2,"Top"],["Frind",2,"Top"],
-  ["MT boucherie",2,"Mid 1"],["Screaming frenzy",2,"Mid 1"],["Cedar creek",2,"Mid 1"],["Five vineyard",2,"Mid 1"],
-  ["The hatch",2,"Mid 2"],["Quail gate",2,"Mid 2"],
+  ["Good natured",1,"Bottom"],["Sumac",1,"Bottom"],["Pellet family",1,"Bottom"],["Gray monk latitude",1,"Bottom"],["Kalala",1,"Bottom"],
+  ["Volcanic",2,"Top"],["Tender",2,"Top"],["Tantalus",2,"Top"],["Frind",2,"Top"],["Mission Hill",2,"Top"],
+  ["MT boucherie",2,"Mid 1"],["Screaming frenzy",2,"Mid 1"],["Cedar creek",2,"Mid 1"],["Five vineyard",2,"Mid 1"],["Spearhead",2,"Mid 1"],
+  ["Wayne Gretzky",2,"Mid 2"],["Screaming Frenzy",2,"Mid 2"],["Quails Gate",2,"Mid 2"],
   ["Grow wild",2,"Bottom"],["Sandhill",2,"Bottom"],["Raven",2,"Bottom"],["Peller family",2,"Bottom"],["Summerhill",2,"Bottom"],
   ["La Franz",3,"Top"],["Nichol",3,"Top"],["Laughing Stock",3,"Top"],["Da Silva vineyards",3,"Top"],["Little engine elevation",3,"Top"],["Popular grove",3,"Top"],
-  ["Bench 1775",3,"Mid 1"],["Lock & worth",3,"Mid 1"],["IMBZZL",3,"Mid 1"],["Roche",3,"Mid 1"],["Pentagram Washington",3,"Mid 1"],["Pentage Hiatus",3,"Mid 1"],["Chronos",3,"Mid 1"],["Josie",3,"Mid 1"],["Monster",3,"Mid 1"],
+  ["Bench 1775",3,"Mid 1"],["Lock & worth",3,"Mid 1"],["IMBZZL",3,"Mid 1"],["Roche",3,"Mid 1"],["Pentagram Washington",3,"Mid 1"],["Pentage Hiatus",3,"Mid 1"],["Chronos",3,"Mid 1"],["Monster",3,"Mid 1"],["Joie",3,"Mid 1"],
   ["Red rooster",3,"Mid 2"],["Tightrope",3,"Mid 2"],["Three sister",3,"Mid 2"],["Moraine",3,"Mid 2"],
   ["Evolve",3,"Bottom"],["Hillside",3,"Bottom"],["Therapy",3,"Bottom"],["Lake breeze",3,"Bottom"],
-  ["Blasted church",4,"Top"],["Blue mountain",4,"Top"],["Stags hallow",4,"Top"],["Winemaker's cut",4,"Top"],["River stone",4,"Top"],["Hester creek",4,"Top"],
-  ["Blasted church Washington",4,"Mid 1"],["Bonomici",4,"Mid 1"],
-  ["Wild goose",4,"Mid 2"],["Road 13",4,"Mid 2"],["Saintly rose",4,"Mid 2"],
+  ["Blasted church",4,"Top"],["Blue mountain",4,"Top"],["Stags hallow",4,"Top"],["Winemaker's cut",4,"Top"],["River stone",4,"Top"],["Hester creek",4,"Top"],["Kettle valley",4,"Top"],
+  ["Blasted church Washington",4,"Mid 1"],["Bonomici",4,"Mid 1"],["River stone",4,"Mid 1"],
+  ["Wild goose",4,"Mid 2"],["Road 13",4,"Mid 2"],["Saintly",4,"Mid 2"],
   ["See ya later ranch",4,"Bottom"],["Noble ridge",4,"Bottom"],["Inniskillin",4,"Bottom"],
-  ["Curious incident",5,"Top"],["Calliope figure 8",5,"Top"],["Q&A",5,"Top"],["Cassini",5,"Top"],["Fairview",5,"Top"],["Burrow owl",5,"Top"],["Liquidity",5,"Top"],["Maverick",5,"Top"],["Le vieux pin",5,"Top"],
+  ["Curious incident",5,"Top"],["Calliope figure 8",5,"Top"],["Q&A",5,"Top"],["Cassini",5,"Top"],["Fairview",5,"Top"],["Burrow owl",5,"Top"],["Liquidity",5,"Top"],["Maverick",5,"Top"],["Le vieux pin",5,"Top"],["Osoyoos Larose",5,"Top"],
   ["Jackson-Griggs reserve",5,"Mid 1"],["Church & state",5,"Mid 1"],["Silver sage",5,"Mid 1"],["Rust",5,"Mid 1"],
-  ["OkV",5,"Mid 2"],["Church and State lost inhibition",5,"Mid 2"],["Tinhorn",5,"Mid 2"],["Sunrock",5,"Mid 2"],["Stoneboat",5,"Mid 2"],
-  ["Vintage ink",5,"Bottom"],["Diabolical",5,"Bottom"],["Grinder",5,"Bottom"],
+  ["Church and State lost inhibition",5,"Mid 2"],["Tinhorn",5,"Mid 2"],["Sunrock",5,"Mid 2"],["Stoneboat",5,"Mid 2"],["Open",5,"Mid 2"],
+  ["OkV",5,"Bottom"],["Vintage ink",5,"Bottom"],["Diabolical",5,"Bottom"],["Gehringer",5,"Bottom"],
   ["Moon curser",6,"Top"],["Clos du soleil",6,"Top"],["Unsworth",6,"Top"],["Corcelettes",6,"Top"],["Phoenix Washington",6,"Top"],["Tawse quarry",6,"Top"],["Tawse grower's",6,"Top"],["Henry of Pelham",6,"Top"],
   ["La Stella",6,"Mid 1"],["Lakeside",6,"Mid 1"],["Orofino",6,"Mid 1"],["Alders",6,"Mid 1"],["Fort Beren's",6,"Mid 1"],["Robin ridge",6,"Mid 1"],["Blue grouse",6,"Mid 1"],["Blue grouse quill",6,"Mid 1"],
   ["Border town",6,"Mid 2"],["Adela on 45th",6,"Mid 2"],["Nk'mip",6,"Mid 2"],["Country vine",6,"Mid 2"],["Fort berens",6,"Mid 2"],["Seastar",6,"Mid 2"],["Sage Hayward",6,"Mid 2"],["Adega",6,"Mid 2"],
-  ["Monte Creek",6,"Bottom"],["Country wine",6,"Bottom"],["Chaberton",6,"Bottom"]
+  ["Monte Creek",6,"Bottom"],["Country wine",6,"Bottom"],["Chaberton",6,"Bottom"],["Bordertown",6,"Bottom"]
 ];
 
 let activeShelf=1,selectedIdx=null,targetShelf=null,targetSection=null;
@@ -200,7 +182,6 @@ function startDrag(e,idx,name,section,tag){
   ghost.textContent=name;
   ghost.style.background=bgOf(section);
   ghost.style.color=fgOf(section);
-
   const onMove=ev=>{
     const{x:cx,y:cy}=getXY(ev);
     if(!isDragging){
@@ -215,7 +196,6 @@ function startDrag(e,idx,name,section,tag){
     const wrap=el&&el.closest(".tags-wrap");
     if(wrap)wrap.classList.add("drop-active");
   };
-
   const onEnd=ev=>{
     document.removeEventListener("mousemove",onMove);document.removeEventListener("mouseup",onEnd);
     document.removeEventListener("touchmove",onMove);document.removeEventListener("touchend",onEnd);
@@ -231,7 +211,6 @@ function startDrag(e,idx,name,section,tag){
     }
     dragIdx=null;isDragging=false;
   };
-
   document.addEventListener("mousemove",onMove);
   document.addEventListener("mouseup",onEnd);
   document.addEventListener("touchmove",onMove,{passive:false});
@@ -283,8 +262,7 @@ function showResult(matches){
   panel.className="result-panel visible";
   if(matches.length===1){
     const[name,shelf,section]=matches[0];
-    inner.innerHTML=`
-      <div class="result-name">${name}</div>
+    inner.innerHTML=`<div class="result-name">${name}</div>
       <div class="result-row">
         <div class="result-badge"><span class="result-shelf-num">${shelf}</span><span class="result-shelf-lbl">SHELF</span></div>
         <div style="flex:1"><div class="result-section-label">Section</div><span class="result-section-pill ${tcls(section)}">${section}</span></div>
@@ -332,8 +310,7 @@ function openMovePanel(idx){
     btn.onclick=()=>{
       targetShelf=s;
       document.querySelectorAll(".shelf-picker button").forEach(b=>b.classList.remove("picked"));
-      btn.classList.add("picked");
-      buildSectionPicker();
+      btn.classList.add("picked");buildSectionPicker();
     };
     sp.appendChild(btn);
   }
