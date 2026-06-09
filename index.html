@@ -1,105 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EW River District BC Wine Shelf Manager</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EW River District · BC Wine Shelf Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
   <style>
+    :root{
+      --paper:#FBF7EF;
+      --page:#EFE7D8;
+      --ink:#2A2320;
+      --ink-soft:#7A6F64;
+      --ink-faint:#B6A998;
+      --line:#E6DCCB;
+      --line-strong:#D8CCB6;
+      --wine:#11385f;
+      --wine-dark:#0b2a47;
+      --wine-tint:#E0EAF3;
+      --gold:#C49A4A;
+      --sans:'Hanken Grotesk',system-ui,sans-serif;
+      --serif:'Marcellus',Georgia,serif;
+    }
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:system-ui,sans-serif;background:#f5f5f0;min-height:100vh;display:flex;justify-content:center;padding:1.5rem 1rem;}
-    .screen{background:#fff;border-radius:16px;border:1px solid #e5e5e5;overflow:hidden;width:100%;max-width:440px;align-self:flex-start;}
-    .topbar{padding:14px 14px 10px;border-bottom:1px solid #eee;}
-    .topbar-title{font-size:17px;font-weight:500;color:#111;margin-bottom:8px;}
-    .search-row{display:flex;gap:6px;}
-    .search-row input{flex:1;padding:9px 11px;font-size:14px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;}
-    .search-row input:focus{outline:none;box-shadow:0 0 0 2px rgba(83,74,183,0.2);}
-    .search-row button{padding:9px 13px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
-    .search-row button:hover{background:#f0f0f0;}
-    .search-row button:active{transform:scale(0.97);}
-    .result-panel{padding:14px;border-bottom:1px solid #eee;background:#f9f9f7;display:none;}
-    .result-panel.visible{display:block;}
-    .result-empty{font-size:14px;color:#999;text-align:center;padding:8px 0;}
-    .result-name{font-size:24px;font-weight:500;color:#111;margin-bottom:12px;line-height:1.2;}
-    .result-row{display:flex;align-items:center;gap:12px;}
-    .result-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:78px;height:78px;background:#EEEDFE;border-radius:12px;flex-shrink:0;}
-    .result-shelf-num{font-size:36px;font-weight:500;color:#3C3489;line-height:1;}
-    .result-shelf-lbl{font-size:11px;color:#534AB7;margin-top:2px;letter-spacing:0.05em;}
-    .result-section-label{font-size:12px;color:#999;margin-bottom:5px;}
-    .result-section-pill{display:inline-block;font-size:20px;font-weight:500;padding:6px 18px;border-radius:99px;}
+    body{
+      font-family:var(--sans);
+      background:radial-gradient(120% 80% at 50% -10%,#F6EFE2 0%,var(--page) 60%) fixed;
+      color:var(--ink);min-height:100vh;display:flex;justify-content:center;
+      padding:32px 16px 48px;-webkit-font-smoothing:antialiased;
+    }
+    .screen{
+      background:var(--paper);border-radius:18px;border:1px solid var(--line-strong);
+      box-shadow:0 1px 0 rgba(255,255,255,0.6) inset,0 18px 50px -24px rgba(60,30,20,0.45);
+      overflow:hidden;width:100%;max-width:452px;align-self:flex-start;
+    }
+
+    /* masthead */
+    .masthead{padding:22px 22px 18px;border-bottom:1px solid var(--line);position:relative;}
+    .masthead::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;
+      background:linear-gradient(90deg,var(--wine) 0%,var(--wine) 60%,var(--gold) 60%,var(--gold) 100%);opacity:0.9;}
+    .brand-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .brand-mark{width:30px;height:30px;border-radius:50%;background:var(--wine);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+    .brand-mark span{font-family:var(--serif);color:#F6E3C8;font-size:15px;line-height:1;}
+    .brand-over{font-size:10.5px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;color:var(--wine);}
+    .brand-sub{font-size:11px;color:var(--ink-soft);letter-spacing:0.04em;margin-top:1px;}
+    .masthead h1{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.05;color:var(--wine);letter-spacing:0.01em;}
+    .masthead .tagline{font-size:12.5px;color:var(--ink-soft);margin-top:6px;}
+
+    /* search */
+    .search-wrap{padding:16px 22px;border-bottom:1px solid var(--line);}
+    .search-row{display:flex;gap:8px;}
+    .search-field{flex:1;position:relative;}
+    .search-field svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:0.5;}
+    .search-row input{width:100%;padding:12px 13px 12px 38px;font-family:var(--sans);font-size:15px;
+      border-radius:11px;border:1px solid var(--line-strong);background:#fff;color:var(--ink);transition:box-shadow .15s,border-color .15s;}
+    .search-row input::placeholder{color:var(--ink-faint);}
+    .search-row input:focus{outline:none;border-color:var(--wine);box-shadow:0 0 0 3px rgba(110,31,46,0.12);}
+    .btn-find{padding:12px 18px;font-family:var(--sans);font-size:14px;font-weight:600;border-radius:11px;border:1px solid var(--wine);
+      background:var(--wine);color:#FBF3E6;cursor:pointer;transition:background .15s,transform .08s;}
+    .btn-find:hover{background:var(--wine-dark);}
+    .btn-find:active{transform:scale(0.97);}
+    .btn-clear{padding:12px 14px;font-family:var(--sans);font-size:13px;font-weight:500;border-radius:11px;border:1px solid var(--line-strong);
+      background:#fff;color:var(--ink-soft);cursor:pointer;transition:background .15s;}
+    .btn-clear:hover{background:#F4ECDD;}
+
+    /* result */
+    .result-panel{padding:18px 22px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FFFDF8,#FBF6ED);display:none;}
+    .result-panel.visible{display:block;animation:rise .28s ease both;}
+    @keyframes rise{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+    .result-empty{font-size:14px;color:var(--ink-soft);text-align:center;padding:14px 0;}
+    .result-empty b{color:var(--wine);}
+    .result-name{font-family:var(--serif);font-size:27px;font-weight:400;color:var(--ink);margin-bottom:14px;line-height:1.12;}
+    .result-row{display:flex;align-items:center;gap:14px;}
+    .result-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:82px;height:82px;
+      background:var(--wine);border-radius:14px;flex-shrink:0;box-shadow:0 8px 18px -10px rgba(110,31,46,0.7);}
+    .result-shelf-num{font-family:var(--serif);font-size:42px;color:#FBF3E6;line-height:1;}
+    .result-shelf-lbl{font-size:9.5px;color:var(--gold);margin-top:3px;letter-spacing:0.22em;font-weight:600;}
+    .result-section-label{font-size:11px;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;}
+    .result-section-pill{display:inline-block;font-size:18px;font-weight:600;padding:7px 20px;border-radius:99px;font-family:var(--sans);}
     .result-multi{display:flex;flex-direction:column;gap:8px;}
-    .result-multi-item{display:flex;align-items:center;gap:10px;background:#fff;border-radius:10px;border:1px solid #eee;padding:10px;}
-    .mini-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:50px;height:50px;background:#EEEDFE;border-radius:8px;flex-shrink:0;}
-    .mini-shelf-num{font-size:24px;font-weight:500;color:#3C3489;line-height:1;}
-    .mini-shelf-lbl{font-size:10px;color:#534AB7;letter-spacing:0.04em;}
-    .mini-name{font-size:13px;font-weight:500;color:#111;margin-bottom:3px;}
-    .mini-pill{display:inline-block;font-size:12px;font-weight:500;padding:3px 10px;border-radius:99px;}
-    .shelf-tabs{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid #eee;}
-    .shelf-tab{padding:10px 4px;font-size:12px;font-weight:500;color:#999;cursor:pointer;text-align:center;border-bottom:2px solid transparent;white-space:nowrap;}
-    .shelf-tab.active{color:#3C3489;border-bottom-color:#3C3489;}
-    .shelf-tab:hover{color:#534AB7;}
-    .hint{font-size:11px;color:#bbb;padding:6px 14px 0;text-align:center;}
-    .shelf-content{padding:10px 14px 8px;}
-    .section-block{margin-bottom:10px;}
-    .sec-label{font-size:11px;font-weight:500;color:#bbb;margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase;}
-    .tags-wrap{display:flex;flex-wrap:wrap;gap:5px;min-height:38px;border-radius:8px;border:1px dashed #ddd;padding:6px;transition:background 0.12s,border-color 0.12s;}
-    .tags-wrap.drop-active{background:#EEEDFE;border-color:#534AB7;border-style:solid;}
-    .tag{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:grab;user-select:none;touch-action:none;}
+    .result-multi-count{font-size:11px;color:var(--ink-faint);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:2px;}
+    .result-multi-item{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;border:1px solid var(--line);padding:11px;}
+    .mini-badge{display:flex;flex-direction:column;align-items:center;justify-content:center;width:52px;height:52px;background:var(--wine);border-radius:10px;flex-shrink:0;}
+    .mini-shelf-num{font-family:var(--serif);font-size:25px;color:#FBF3E6;line-height:1;}
+    .mini-shelf-lbl{font-size:8px;color:var(--gold);letter-spacing:0.16em;font-weight:600;margin-top:2px;}
+    .mini-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+    .mini-pill{display:inline-block;font-size:12px;font-weight:600;padding:3px 11px;border-radius:99px;}
+
+    /* shelf tabs */
+    .shelf-tabs{display:grid;grid-template-columns:repeat(6,1fr);background:#F6EEE0;border-bottom:1px solid var(--line);}
+    .shelf-tab{padding:11px 4px;font-size:12px;font-weight:600;color:var(--ink-soft);cursor:pointer;text-align:center;
+      border-bottom:2.5px solid transparent;white-space:nowrap;transition:color .12s,background .12s;}
+    .shelf-tab.active{color:var(--wine);border-bottom-color:var(--wine);background:var(--paper);}
+    .shelf-tab:hover:not(.active){color:var(--wine);background:#F1E7D6;}
+    .hint{font-size:11px;color:var(--ink-faint);padding:9px 18px 0;text-align:center;letter-spacing:0.01em;}
+
+    /* shelf content */
+    .shelf-content{padding:12px 18px 10px;}
+    .section-block{margin-bottom:12px;}
+    .sec-label{font-size:10.5px;font-weight:700;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.14em;text-transform:uppercase;}
+    .tags-wrap{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;border-radius:11px;border:1px dashed var(--line-strong);
+      padding:7px;transition:background .12s,border-color .12s;}
+    .tags-wrap.drop-active{background:var(--wine-tint);border-color:var(--wine);border-style:solid;}
+    .tag{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:20px;font-size:12.5px;font-weight:600;white-space:nowrap;
+      cursor:grab;user-select:none;touch-action:none;transition:transform .08s,box-shadow .12s;}
+    .tag:hover{box-shadow:0 2px 6px -2px rgba(60,30,20,0.25);}
     .tag.dragging-source{opacity:0.25;}
-    .tag.highlighted{outline:2.5px solid #D85A30;outline-offset:2px;}
-    .tag.selected{outline:2.5px solid #534AB7;outline-offset:2px;}
-    .tag .x{font-size:16px;opacity:0.4;line-height:1;margin-left:2px;cursor:pointer;}
+    .tag.highlighted{outline:2.5px solid var(--gold);outline-offset:2px;box-shadow:0 0 0 4px rgba(196,154,74,0.18);}
+    .tag.selected{outline:2.5px solid var(--wine);outline-offset:2px;}
+    .tag .x{font-size:15px;opacity:0.4;line-height:1;margin-left:1px;cursor:pointer;}
     .tag .x:hover{opacity:1;}
-    .top-tag{background:#EAF3DE;color:#27500A;}
-    .mid1-tag{background:#E6F1FB;color:#0C447C;}
-    .mid2-tag{background:#FAEEDA;color:#633806;}
-    .bot-tag{background:#FAECE7;color:#712B13;}
-    #ghost{position:fixed;pointer-events:none;z-index:9999;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;display:none;transform:rotate(2deg);box-shadow:0 2px 10px rgba(0,0,0,0.15);}
-    .move-panel{background:#f9f9f7;border-top:1px solid #eee;padding:12px 14px;display:none;}
+    .top-tag{background:#E7EFE2;color:#3B5E30;}
+    .mid1-tag{background:#E4ECF3;color:#305472;}
+    .mid2-tag{background:#F4EBD9;color:#7C5A1F;}
+    .bot-tag{background:#F2E3DD;color:#7E3527;}
+
+    #ghost{position:fixed;pointer-events:none;z-index:9999;padding:6px 13px;border-radius:20px;font-size:12.5px;font-weight:600;
+      white-space:nowrap;display:none;transform:rotate(2deg);box-shadow:0 6px 18px rgba(60,30,20,0.28);}
+
+    /* move panel */
+    .move-panel{background:#F8F1E6;border-top:1px solid var(--line);padding:14px 18px;display:none;}
     .move-panel.visible{display:block;}
-    .move-title{font-size:13px;font-weight:500;color:#111;margin-bottom:2px;}
-    .move-winery{font-size:12px;color:#999;margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .move-step-label{font-size:11px;color:#999;margin-bottom:6px;font-weight:500;}
-    .shelf-picker{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
-    .shelf-picker button,.section-picker button{padding:7px 12px;font-size:12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
-    .shelf-picker button:hover,.section-picker button:hover{background:#f0f0f0;}
-    .shelf-picker button.picked,.section-picker button.picked{background:#EEEDFE;border-color:#534AB7;color:#3C3489;font-weight:500;}
-    .shelf-picker button:disabled{opacity:0.35;cursor:default;pointer-events:none;}
-    .section-picker{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;}
-    .confirm-btn{width:100%;padding:10px;font-size:13px;font-weight:500;border-radius:8px;border:1px solid #534AB7;background:#EEEDFE;color:#3C3489;cursor:pointer;display:none;}
-    .confirm-btn:hover{background:#CECBF6;}
+    .move-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+    .move-winery{font-family:var(--serif);font-size:16px;color:var(--wine);margin-bottom:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .move-step-label{font-size:11px;color:var(--ink-soft);margin-bottom:7px;font-weight:600;}
+    .shelf-picker{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+    .shelf-picker button,.section-picker button{padding:8px 13px;font-family:var(--sans);font-size:12.5px;font-weight:500;border-radius:9px;
+      border:1px solid var(--line-strong);background:#fff;color:var(--ink);cursor:pointer;transition:background .12s,border-color .12s;}
+    .shelf-picker button:hover,.section-picker button:hover{background:#F2E8D8;}
+    .shelf-picker button.picked,.section-picker button.picked{background:var(--wine-tint);border-color:var(--wine);color:var(--wine);font-weight:700;}
+    .shelf-picker button:disabled{opacity:0.32;cursor:default;pointer-events:none;}
+    .section-picker{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+    .confirm-btn{width:100%;padding:11px;font-family:var(--sans);font-size:13.5px;font-weight:600;border-radius:10px;border:1px solid var(--wine);
+      background:var(--wine);color:#FBF3E6;cursor:pointer;display:none;transition:background .12s;}
+    .confirm-btn:hover{background:var(--wine-dark);}
     .confirm-btn.visible{display:block;}
-    .cancel-btn{width:100%;padding:8px;font-size:12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#999;cursor:pointer;margin-top:5px;}
-    .cancel-btn:hover{background:#f0f0f0;}
-    .add-bar{padding:10px 14px 14px;border-top:1px solid #eee;}
-    .add-bar-label{font-size:11px;font-weight:500;color:#bbb;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:7px;}
-    .add-bar input{width:100%;padding:9px 10px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;margin-bottom:6px;}
-    .add-bar input:focus{outline:none;box-shadow:0 0 0 2px rgba(83,74,183,0.15);}
-    .add-selects{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
-    .add-selects select{padding:8px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;}
-    .add-submit{width:100%;padding:9px;font-size:13px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
-    .add-submit:hover{background:#f0f0f0;}
+    .cancel-btn{width:100%;padding:9px;font-family:var(--sans);font-size:12.5px;font-weight:500;border-radius:10px;border:1px solid var(--line-strong);
+      background:#fff;color:var(--ink-soft);cursor:pointer;margin-top:6px;}
+    .cancel-btn:hover{background:#F2E8D8;}
+
+    /* add bar */
+    .add-bar{padding:14px 18px;border-top:1px solid var(--line);background:#FCF8F0;}
+    .add-bar-label{font-size:10.5px;font-weight:700;color:var(--ink-faint);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:9px;}
+    .add-bar input{width:100%;padding:11px 12px;font-family:var(--sans);font-size:13.5px;border-radius:10px;border:1px solid var(--line-strong);
+      background:#fff;color:var(--ink);margin-bottom:7px;}
+    .add-bar input::placeholder{color:var(--ink-faint);}
+    .add-bar input:focus{outline:none;border-color:var(--wine);box-shadow:0 0 0 3px rgba(110,31,46,0.1);}
+    .add-selects{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;}
+    .add-selects select{padding:10px;font-family:var(--sans);font-size:13.5px;border-radius:10px;border:1px solid var(--line-strong);background:#fff;color:var(--ink);cursor:pointer;}
+    .add-submit{width:100%;padding:11px;font-family:var(--sans);font-size:13.5px;font-weight:600;border-radius:10px;border:1px solid var(--line-strong);
+      background:#fff;color:var(--wine);cursor:pointer;transition:background .12s;}
+    .add-submit:hover{background:var(--wine-tint);border-color:var(--wine);}
     .add-submit:active{transform:scale(0.98);}
-    .bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 14px;gap:8px;}
-    .statusbar{font-size:11px;color:#bbb;}
-    .export-btn{padding:6px 12px;font-size:12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#111;cursor:pointer;}
-    .export-btn:hover{background:#f0f0f0;}
+
+    /* bottom */
+    .bottom-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 16px;gap:8px;}
+    .statusbar{font-size:11px;color:var(--ink-faint);letter-spacing:0.02em;}
+    .export-btn{padding:8px 14px;font-family:var(--sans);font-size:12px;font-weight:600;border-radius:9px;border:1px solid var(--line-strong);
+      background:#fff;color:var(--ink-soft);cursor:pointer;transition:background .12s;}
+    .export-btn:hover{background:#F2E8D8;color:var(--ink);}
   </style>
 </head>
 <body>
+
 <div id="ghost"></div>
+
 <div class="screen">
-  <div class="topbar">
-    <div class="topbar-title">🍷 EW River District BC Wine Shelf Manager</div>
+
+  <div class="masthead">
+    <div class="brand-row">
+      <div class="brand-mark"><span>EW</span></div>
+      <div>
+        <div class="brand-over">Everything Wine</div>
+        <div class="brand-sub">River District · Vancouver</div>
+      </div>
+    </div>
+    <h1>BC Wine Shelf Manager</h1>
+    <p class="tagline">Search a winery to find its shelf — or browse and drag to reorganise.</p>
+  </div>
+
+  <div class="search-wrap">
     <div class="search-row">
-      <input type="text" id="mSearch" placeholder="Search winery..." onkeydown="if(event.key==='Enter')doSearch()" />
-      <button onclick="doSearch()">Find</button>
-      <button onclick="doClear()">Clear</button>
+      <div class="search-field">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="mSearch" placeholder="Search winery…" onkeydown="if(event.key==='Enter')doSearch()" />
+      </div>
+      <button class="btn-find" onclick="doSearch()">Find</button>
+      <button class="btn-clear" onclick="doClear()">Clear</button>
     </div>
   </div>
+
   <div class="result-panel" id="resultPanel"><div id="resultInner"></div></div>
+
   <div class="shelf-tabs" id="shelfTabs"></div>
   <div class="hint">Drag tag to move within shelf &nbsp;·&nbsp; Click tag to move across shelves</div>
   <div class="shelf-content" id="shelfContent"></div>
+
   <div class="move-panel" id="movePanel">
     <div class="move-title">Move to another shelf</div>
     <div class="move-winery" id="moveName"></div>
@@ -110,9 +208,10 @@
     <button class="confirm-btn" id="confirmBtn" onclick="confirmMove()">Confirm move</button>
     <button class="cancel-btn" onclick="cancelMove()">Cancel</button>
   </div>
+
   <div class="add-bar">
     <div class="add-bar-label">Add winery</div>
-    <input type="text" id="mNewName" placeholder="Winery name..." />
+    <input type="text" id="mNewName" placeholder="Winery name…" />
     <div class="add-selects">
       <select id="mNewShelf">
         <option value="1">Shelf 1</option><option value="2">Shelf 2</option>
@@ -125,17 +224,19 @@
     </div>
     <button class="add-submit" onclick="mAdd()">+ Add winery</button>
   </div>
+
   <div class="bottom-bar">
     <span class="statusbar" id="statusBar"></span>
-    <button class="export-btn" onclick="exportCSV()">&#8595; Export CSV</button>
+    <button class="export-btn" onclick="exportCSV()">↓ Export CSV</button>
   </div>
+
 </div>
 
 <script>
 const SECTIONS=["Top","Mid 1","Mid 2","Bottom"];
 const tcls=s=>({Top:"top-tag","Mid 1":"mid1-tag","Mid 2":"mid2-tag",Bottom:"bot-tag"}[s]||"top-tag");
-const bgOf=s=>({Top:"#EAF3DE","Mid 1":"#E6F1FB","Mid 2":"#FAEEDA",Bottom:"#FAECE7"}[s]||"#eee");
-const fgOf=s=>({Top:"#27500A","Mid 1":"#0C447C","Mid 2":"#633806",Bottom:"#712B13"}[s]||"#111");
+const bgOf=s=>({Top:"#E7EFE2","Mid 1":"#E4ECF3","Mid 2":"#F4EBD9",Bottom:"#F2E3DD"}[s]||"#eee");
+const fgOf=s=>({Top:"#3B5E30","Mid 1":"#305472","Mid 2":"#7C5A1F",Bottom:"#7E3527"}[s]||"#222");
 
 let db=[
   // Shelf 1
@@ -185,9 +286,7 @@ function startDrag(e,idx,name,section,tag){
   if(e.target.classList.contains("x"))return;
   const{x,y}=getXY(e);
   dragIdx=idx;isDragging=false;dragStartX=x;dragStartY=y;
-  ghost.textContent=name;
-  ghost.style.background=bgOf(section);
-  ghost.style.color=fgOf(section);
+  ghost.textContent=name;ghost.style.background=bgOf(section);ghost.style.color=fgOf(section);
   const onMove=ev=>{
     const{x:cx,y:cy}=getXY(ev);
     if(!isDragging){
@@ -198,8 +297,7 @@ function startDrag(e,idx,name,section,tag){
     if(ev.cancelable)ev.preventDefault();
     ghost.style.left=(cx-40)+"px";ghost.style.top=(cy-18)+"px";
     document.querySelectorAll(".tags-wrap").forEach(w=>w.classList.remove("drop-active"));
-    const el=document.elementFromPoint(cx,cy);
-    const wrap=el&&el.closest(".tags-wrap");
+    const el=document.elementFromPoint(cx,cy);const wrap=el&&el.closest(".tags-wrap");
     if(wrap)wrap.classList.add("drop-active");
   };
   const onEnd=ev=>{
@@ -210,22 +308,16 @@ function startDrag(e,idx,name,section,tag){
     tag.classList.remove("dragging-source");
     if(!isDragging){dragIdx=null;isDragging=false;openMovePanel(idx);return;}
     const{x:ex,y:ey}=getXY(ev);
-    const el=document.elementFromPoint(ex,ey);
-    const wrap=el&&el.closest(".tags-wrap");
-    if(wrap&&wrap.dataset.section&&wrap.dataset.section!==db[dragIdx][2]){
-      db[dragIdx][2]=wrap.dataset.section;renderShelf();
-    }
+    const el=document.elementFromPoint(ex,ey);const wrap=el&&el.closest(".tags-wrap");
+    if(wrap&&wrap.dataset.section&&wrap.dataset.section!==db[dragIdx][2]){db[dragIdx][2]=wrap.dataset.section;renderShelf();}
     dragIdx=null;isDragging=false;
   };
-  document.addEventListener("mousemove",onMove);
-  document.addEventListener("mouseup",onEnd);
-  document.addEventListener("touchmove",onMove,{passive:false});
-  document.addEventListener("touchend",onEnd);
+  document.addEventListener("mousemove",onMove);document.addEventListener("mouseup",onEnd);
+  document.addEventListener("touchmove",onMove,{passive:false});document.addEventListener("touchend",onEnd);
 }
 
 function buildTabs(){
-  const tabs=document.getElementById("shelfTabs");
-  tabs.innerHTML="";
+  const tabs=document.getElementById("shelfTabs");tabs.innerHTML="";
   for(let s=1;s<=6;s++){
     const t=document.createElement("div");
     t.className="shelf-tab"+(s===activeShelf?" active":"");
@@ -236,8 +328,7 @@ function buildTabs(){
 }
 
 function renderShelf(){
-  const content=document.getElementById("shelfContent");
-  content.innerHTML="";
+  const content=document.getElementById("shelfContent");content.innerHTML="";
   SECTIONS.forEach(sec=>{
     const block=document.createElement("div");block.className="section-block";
     const lbl=document.createElement("div");lbl.className="sec-label";lbl.textContent=sec;block.appendChild(lbl);
@@ -258,12 +349,10 @@ function renderShelf(){
 }
 
 function showResult(matches){
-  const panel=document.getElementById("resultPanel");
-  const inner=document.getElementById("resultInner");
+  const panel=document.getElementById("resultPanel");const inner=document.getElementById("resultInner");
   if(!matches||matches.length===0){
     panel.className="result-panel visible";
-    inner.innerHTML=`<div class="result-empty">No winery found — check the spelling.</div>`;
-    return;
+    inner.innerHTML=`<div class="result-empty">No winery found for <b>"${document.getElementById("mSearch").value.trim()}"</b></div>`;return;
   }
   panel.className="result-panel visible";
   if(matches.length===1){
@@ -274,7 +363,7 @@ function showResult(matches){
         <div style="flex:1"><div class="result-section-label">Section</div><span class="result-section-pill ${tcls(section)}">${section}</span></div>
       </div>`;
   }else{
-    inner.innerHTML=`<div class="result-multi">${matches.map(([name,shelf,section])=>`
+    inner.innerHTML=`<div class="result-multi-count">${matches.length} results</div><div class="result-multi">${matches.map(([name,shelf,section])=>`
       <div class="result-multi-item">
         <div class="mini-badge"><span class="mini-shelf-num">${shelf}</span><span class="mini-shelf-lbl">SHELF</span></div>
         <div><div class="mini-name">${name}</div><span class="mini-pill ${tcls(section)}">${section}</span></div>
@@ -289,11 +378,7 @@ function doSearch(){
   showResult(matches);
   if(matches.length>0){
     activeShelf=matches[0][1];cancelMove();buildTabs();renderShelf();
-    setTimeout(()=>{
-      document.querySelectorAll(".tag span:first-child").forEach(s=>{
-        if(s.textContent.toLowerCase().includes(q))s.parentElement.classList.add("highlighted");
-      });
-    },30);
+    setTimeout(()=>{document.querySelectorAll(".tag span:first-child").forEach(s=>{if(s.textContent.toLowerCase().includes(q))s.parentElement.classList.add("highlighted");});},30);
   }
 }
 
@@ -310,17 +395,12 @@ function openMovePanel(idx){
   document.getElementById("movePanel").className="move-panel visible";
   const sp=document.getElementById("shelfPicker");sp.innerHTML="";
   for(let s=1;s<=6;s++){
-    const btn=document.createElement("button");
-    btn.textContent="Shelf "+s;
+    const btn=document.createElement("button");btn.textContent="Shelf "+s;
     if(s===db[idx][1])btn.disabled=true;
-    btn.onclick=()=>{
-      targetShelf=s;
-      document.querySelectorAll(".shelf-picker button").forEach(b=>b.classList.remove("picked"));
-      btn.classList.add("picked");buildSectionPicker();
-    };
+    btn.onclick=()=>{targetShelf=s;document.querySelectorAll(".shelf-picker button").forEach(b=>b.classList.remove("picked"));btn.classList.add("picked");buildSectionPicker();};
     sp.appendChild(btn);
   }
-  document.getElementById("sectionPicker").innerHTML=`<div style="grid-column:span 2;font-size:12px;color:#bbb;padding:4px 0;">Pick a shelf first</div>`;
+  document.getElementById("sectionPicker").innerHTML=`<div style="grid-column:span 2;font-size:12px;color:var(--ink-faint);padding:4px 0;">Pick a shelf first</div>`;
   document.getElementById("confirmBtn").className="confirm-btn";
 }
 
@@ -328,12 +408,7 @@ function buildSectionPicker(){
   const sp=document.getElementById("sectionPicker");sp.innerHTML="";
   SECTIONS.forEach(sec=>{
     const btn=document.createElement("button");btn.textContent=sec;
-    btn.onclick=()=>{
-      targetSection=sec;
-      document.querySelectorAll(".section-picker button").forEach(b=>b.classList.remove("picked"));
-      btn.classList.add("picked");
-      document.getElementById("confirmBtn").className="confirm-btn visible";
-    };
+    btn.onclick=()=>{targetSection=sec;document.querySelectorAll(".section-picker button").forEach(b=>b.classList.remove("picked"));btn.classList.add("picked");document.getElementById("confirmBtn").className="confirm-btn visible";};
     sp.appendChild(btn);
   });
 }
@@ -351,12 +426,10 @@ function cancelMove(){
 }
 
 function mAdd(){
-  const name=document.getElementById("mNewName").value.trim();
-  if(!name)return;
+  const name=document.getElementById("mNewName").value.trim();if(!name)return;
   const shelf=parseInt(document.getElementById("mNewShelf").value);
   const section=document.getElementById("mNewSection").value;
-  db.push([name,shelf,section]);
-  activeShelf=shelf;
+  db.push([name,shelf,section]);activeShelf=shelf;
   document.getElementById("mNewName").value="";
   cancelMove();buildTabs();renderShelf();
 }
@@ -366,8 +439,7 @@ function exportCSV(){
   db.forEach(([n,s,sec])=>{csv+=`"${n}",${s},"${sec}"\n`;});
   const a=document.createElement("a");
   a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(csv);
-  a.download="bc_wine_shelf_layout.csv";
-  a.click();
+  a.download="bc_wine_shelf_layout.csv";a.click();
 }
 
 function updateStatus(){
